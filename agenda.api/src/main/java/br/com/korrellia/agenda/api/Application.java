@@ -11,16 +11,16 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
 
-	@Bean
-	public CommandLineRunner commandLineRunner(@Autowired ContatoRepository repository){
-		return args -> {
-			Contato contato=new Contato();
-			contato.setNome("Maguila");
-			contato.setEmail("ederson@email");
-			contato.setFavorito(false);
-			repository.save(contato);
-		};
-	}
+//	@Bean
+//	public CommandLineRunner commandLineRunner(@Autowired ContatoRepository repository){
+//		return args -> {
+//			Contato contato=new Contato();
+//			contato.setNome("Maguila");
+//			contato.setEmail("ederson@email");
+//			contato.setFavorito(false);
+//			repository.save(contato);
+//		};
+//	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
