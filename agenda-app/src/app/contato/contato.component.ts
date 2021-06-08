@@ -2,8 +2,10 @@ import { Component, OnInit, OnChanges } from '@angular/core';
 import { Contato } from './contato';
 import { ContatoService } from '../contato.service';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
-import { Subscriber } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ContatoDetalheComponent } from '../contato-detalhe/contato-detalhe.component';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-contato',
@@ -16,14 +18,20 @@ export class ContatoComponent implements OnInit {
   contatos: Contato[] = [];
   colunas = ['foto', 'id', 'nome', 'email', 'favorito'];
 
+  totalElementos = 0;
+  pagina = 0;
+  tamanho = 10;
+  pageSizeOptions: number[] = [10];
+
   constructor(
     private service: ContatoService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.montarFormulario();
-    this.listarContatos();
+    this.listarContatos(this.pagina, this.tamanho);
   }
   montarFormulario() {
     this.formulario = this.fb.group({
@@ -32,9 +40,11 @@ export class ContatoComponent implements OnInit {
     })
   }
 
-  listarContatos() {
-    this.service.list().subscribe(resposta => {
-      this.contatos = resposta;
+  listarContatos(pagina = 0, tamanho = 0) {
+    this.service.list(pagina, tamanho).subscribe(resposta => {
+      this.contatos = resposta.content;
+      this.totalElementos = resposta.totalElements;
+      this.pagina = resposta.number;
     })
   }
   favoritar(contato: Contato) {
@@ -61,5 +71,16 @@ export class ContatoComponent implements OnInit {
         .upload(contato, formData)
         .subscribe(resposta => this.listarContatos());
     }
+  }
+  visualizarContato(contato: Contato) {
+    this.dialog.open(ContatoDetalheComponent, {
+      width: '400px',
+      height: '450px',
+      data: contato
+    })
+  }
+  paginar(event: PageEvent) {
+    this.pagina = event.pageIndex;
+    this.listarContatos(this.pagina, this.tamanho);
   }
 }
